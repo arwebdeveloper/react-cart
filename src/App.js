@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { createContext,useReducer,useEffect } from 'react';
+import Cart from './components/Cart';
+import { products } from './components/product';
+import {reducer} from './components/reducer';
 
-function App() {
+export const GlobalContext = createContext()
+
+const initialState ={
+  products: products,
+  totalAmount: 0,
+  totalItems: 0,
+}
+const App = () => {
+  const [state, dispatch] = useReducer(reducer,initialState)
+
+  const removeItem =(id)=>{
+    return dispatch({
+        type: 'DELETE_ITEM',
+        payload: id
+      })
+  }
+  const clearCart =()=>{
+    return dispatch({
+      type: 'CLEAR_ALL',
+    })
+  }
+  const increaseQuantity=(id)=>{
+    return dispatch({
+      type: 'INCREASE_QUANTITY',
+      payload: id
+    })
+  }
+  const decreaseQuantity=(id)=>{
+    return dispatch({
+      type: 'DECREASE_QUANTITY',
+      payload: id
+    })
+  }
+
+  useEffect(() => {
+    dispatch({ type: "GET_TOTAL" });
+  }, [state.products]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ padding: '50px 100px' }}>
+      <GlobalContext.Provider value={{...state, removeItem, clearCart, increaseQuantity, decreaseQuantity}}>
+        <Cart />
+      </GlobalContext.Provider>
     </div>
-  );
+  )
 }
 
 export default App;
